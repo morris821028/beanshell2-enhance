@@ -5936,7 +5936,7 @@ void VariableDeclaratorId() #VariableDeclaratorId :
   }
 
   static private final class LookaheadSuccess extends java.lang.Error { }
-  final private static LookaheadSuccess jj_ls = new LookaheadSuccess();
+  final private LookaheadSuccess jj_ls = new LookaheadSuccess();
   final private boolean jj_scan_token(int kind) {
     if (jj_scanpos == jj_lastpos) {
       jj_la--;

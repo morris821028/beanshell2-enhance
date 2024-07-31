@@ -358,6 +358,15 @@ final class Reflect {
 		return field;
 	}
 
+	public static Class<?> findInnerClass(Class clas, String innerName) {
+		MemberCache cache = memberCache.get(clas);
+		if (cache == null) {
+			cache = new MemberCache(clas);
+			memberCache.put(clas, cache);
+		}
+		return cache.findInnerClass(innerName);
+	}
+
 
 	/**
 	 * Used when accessibility capability is available to locate an occurrance
@@ -999,9 +1008,15 @@ final class Reflect {
 	/** Class member cached value instance **/
 	static final class MemberCache {
 		private final ConcurrentHashMap<String, Field> fields = new ConcurrentHashMap<>();
+		private final ConcurrentHashMap<String, Class> classes = new ConcurrentHashMap<>();
 
 		public MemberCache(Class<?> clazz) {
 			Class<?> type = clazz;
+
+			for (Class innerClz : type.getDeclaredClasses()) {
+				classes.put(innerClz.getSimpleName(), innerClz);
+			}
+
 			while (type != null) {
 				for (Field f : type.getDeclaredFields()) {
 					if (isPublic(f))
@@ -1012,6 +1027,10 @@ final class Reflect {
 				if (type != null)
 					memberCache.put(type, new MemberCache(type));
 			}
+		}
+
+		public Class<?> findInnerClass(String name) {
+			return classes.get(name);
 		}
 
 		public boolean hasField(String name) {
